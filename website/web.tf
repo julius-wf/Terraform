@@ -12,15 +12,8 @@ resource "aws_instance" "web" {
   ami                    = "ami-0617f77bd30aaddb7" // Amazon Linux2
   instance_type          = "t3.micro"
   vpc_security_group_ids = [aws_security_group.web.id]
-  user_data              = <<EOF
-#!/bin/bash
-yum -y update
-yum -y install httpd
-MYIP=`curl http://169.254.169.254/latest/meta-data/local-ipv4`
-echo "<h2>WebServer with PrivateIP: $MYIP</h2><br>Built by Terraform" > /var/www/html/index.html
-service httpd start
-chkconfig httpd on
-EOF
+  user_data              = file("web.sh")
+
   tags = {
     Name  = "WebServer Built by Terraform"
     Owner = "Dmitry"
