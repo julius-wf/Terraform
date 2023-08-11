@@ -1,5 +1,5 @@
 provider "aws" {
-  region = "eu-central-1"
+  region = "eu-north-1"
 }
 
 data "aws_availability_zones" "available" {}
@@ -59,16 +59,9 @@ resource "aws_security_group" "web" {
 resource "aws_launch_template" "web" {
   name = "web"
   image_id = aws_instance.high.ami
-  instance_type = aws_instance.high.instance_type
+  instance_type = "t3.micro"
   security_group_names = [aws_security_group.web.id]
-  user_data = file("web.sh")
-  block_device_mappings {
-    device_name = "/dev/sda1"
-    ebs {
-      volume_size = 8
-      volume_type = "gp2"
-    }
-  }
+  user_data = filebase64("${path.module}/web.sh")
   tags = {
     Name = "My template"
   }
